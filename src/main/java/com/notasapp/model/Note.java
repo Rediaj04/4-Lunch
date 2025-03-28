@@ -19,9 +19,8 @@ public class Note {
 
     @Override
     public String toString() {
-        return String.format(
-            "=== %s === [%s]\n%s\n\nCreado: %s | Actualizado: %s",
-            title, status, content, createdAt, updatedAt
+        return "=== %s === [%s]\n%s\n\nCreado: %s | Actualizado: %s".formatted(
+                title, status, content, createdAt, updatedAt
         );
     }
 }

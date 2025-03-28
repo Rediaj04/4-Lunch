@@ -8,14 +8,14 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 @Configuration
 public class MongoConfig {
-    
+
     @Bean
-    public MongoClient mongoClient() {
+    MongoClient mongoClient() {
         return MongoClients.create("mongodb://localhost:27017");
     }
-    
+
     @Bean
-    public MongoTemplate mongoTemplate() {
+    MongoTemplate mongoTemplate() {
         return new MongoTemplate(mongoClient(), "notesdb");
     }
 }

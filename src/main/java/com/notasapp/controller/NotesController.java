@@ -35,16 +35,16 @@ public class NotesController {
 
     private void showMainMenu() {
         boolean exit = false;
-        
+
         while (!exit) {
             System.out.println("\n=== MENÚ PRINCIPAL ===");
             System.out.println("1. Ver todas mis notas");
             System.out.println("2. Ver notas por estado");
             System.out.println("3. Salir");
             System.out.print("\nSeleccione una opción: ");
-            
+
             int option = getIntInput();
-            
+
             switch (option) {
                 case 1:
                     viewAllNotes();
@@ -65,13 +65,13 @@ public class NotesController {
 
     private void viewAllNotes() {
         List<Note> notes = notesService.getAllNotesByUser(currentUser.getUsername());
-        
+
         System.out.println("\n=== TODAS MIS NOTAS ===");
         if (notes.isEmpty()) {
             System.out.println("No tienes ninguna nota creada.");
             return;
         }
-        
+
         displayNotesList(notes);
     }
 
@@ -80,15 +80,15 @@ public class NotesController {
         System.out.println("Estados disponibles: Hecho, No hecho, En proceso, En revisión");
         System.out.print("Ingrese el estado a filtrar: ");
         String status = scanner.nextLine();
-        
+
         List<Note> notes = notesService.getNotesByStatus(currentUser.getUsername(), status);
-        
+
         System.out.println("\n=== NOTAS - " + status.toUpperCase() + " ===");
         if (notes.isEmpty()) {
             System.out.println("No tienes notas con el estado '" + status + "'.");
             return;
         }
-        
+
         displayNotesList(notes);
     }
 
@@ -97,10 +97,10 @@ public class NotesController {
             System.out.println((i + 1) + ". " + notes.get(i).getTitle() + 
                              " [" + notes.get(i).getStatus() + "]");
         }
-        
+
         System.out.print("\nIngrese el número de la nota para ver detalles (0 para volver): ");
         int choice = getIntInput();
-        
+
         if (choice > 0 && choice <= notes.size()) {
             System.out.println("\n" + notes.get(choice - 1).toString());
         }
