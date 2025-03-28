@@ -3,7 +3,6 @@ package com.notasapp.controller;
 import com.notasapp.model.Note;
 import com.notasapp.model.User;
 import com.notasapp.service.NotesService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import java.util.List;
 import java.util.Scanner;
@@ -15,7 +14,7 @@ public class NotesController {
     private final Scanner scanner;
     private User currentUser;
 
-    @Autowired
+
     public NotesController(NotesService notesService) {
         this.notesService = notesService;
         this.scanner = new Scanner(System.in);
