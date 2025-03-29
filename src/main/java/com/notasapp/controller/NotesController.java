@@ -7,24 +7,42 @@ import org.springframework.stereotype.Controller;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Controlador que maneja la interfaz de usuario por consola.
+ * Gestiona la interacción del usuario con la aplicación.
+ */
 @Controller
 public class NotesController {
 
+    // Servicio para gestionar la lógica de las notas
     private final NotesService notesService;
+    
+    // Scanner para leer la entrada del usuario
     private final Scanner scanner;
+    
+    // Usuario actualmente logueado en la aplicación
     private User currentUser;
 
-
+    /**
+     * Constructor que inyecta el servicio de notas y crea un scanner.
+     * @param notesService El servicio de notas a utilizar
+     */
     public NotesController(NotesService notesService) {
         this.notesService = notesService;
         this.scanner = new Scanner(System.in);
     }
 
+    /**
+     * Inicia la aplicación solicitando el login y mostrando el menú principal.
+     */
     public void start() {
         loginUser();
         showMainMenu();
     }
 
+    /**
+     * Solicita al usuario que ingrese su nombre de usuario para iniciar sesión.
+     */
     private void loginUser() {
         System.out.println("=== INICIO DE SESIÓN ===");
         System.out.print("Ingrese su nombre de usuario: ");
@@ -33,6 +51,9 @@ public class NotesController {
         System.out.println("\n¡Bienvenido, " + username + "!");
     }
 
+    /**
+     * Muestra el menú principal y procesa las opciones seleccionadas por el usuario.
+     */
     private void showMainMenu() {
         boolean exit = false;
 
@@ -63,6 +84,9 @@ public class NotesController {
         scanner.close();
     }
 
+    /**
+     * Muestra todas las notas del usuario actual.
+     */
     private void viewAllNotes() {
         List<Note> notes = notesService.getAllNotesByUser(currentUser.getUsername());
 
@@ -75,6 +99,9 @@ public class NotesController {
         displayNotesList(notes);
     }
 
+    /**
+     * Solicita un estado y muestra las notas filtradas por ese estado.
+     */
     private void viewNotesByStatus() {
         System.out.println("\n=== VER NOTAS POR ESTADO ===");
         System.out.println("Estados disponibles: Hecho, No hecho, En proceso, En revisión");
@@ -92,6 +119,10 @@ public class NotesController {
         displayNotesList(notes);
     }
 
+    /**
+     * Muestra una lista de notas numeradas y permite seleccionar una para ver sus detalles.
+     * @param notes Lista de notas a mostrar
+     */
     private void displayNotesList(List<Note> notes) {
         for (int i = 0; i < notes.size(); i++) {
             System.out.println((i + 1) + ". " + notes.get(i).getTitle() + 
@@ -106,6 +137,10 @@ public class NotesController {
         }
     }
 
+    /**
+     * Obtiene un número entero de la entrada del usuario, validando que sea correcto.
+     * @return El número entero ingresado
+     */
     private int getIntInput() {
         while (!scanner.hasNextInt()) {
             System.out.println("Por favor, ingrese un número válido.");
