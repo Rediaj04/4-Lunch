@@ -4,6 +4,7 @@ import com.notasapp.model.Note;
 import com.notasapp.repository.NoteRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Date;
 
 /**
  * Servicio que maneja la lógica de negocio relacionada con las notas.
@@ -14,13 +15,16 @@ public class NotesService {
 
     // Repositorio para acceder a la base de datos de notas
     private final NoteRepository noteRepository;
+    private final UserService userService;
 
     /**
      * Constructor que inyecta el repositorio de notas.
      * @param noteRepository El repositorio de notas a utilizar
+     * @param userService El servicio de usuarios
      */
-    public NotesService(NoteRepository noteRepository) {
+    public NotesService(NoteRepository noteRepository, UserService userService) {
         this.noteRepository = noteRepository;
+        this.userService = userService;
     }
 
     /**
@@ -41,4 +45,53 @@ public class NotesService {
     public List<Note> getNotesByStatus(String userId, String status) {
         return noteRepository.findByUserIdAndStatus(userId, status);
     }
-}
+
+    /**
+     * Crea una nueva nota para un usuario verificando que el estado sea válido.
+     * @param userId El ID del usuario
+     * @param title El título de la nota
+     * @param content El contenido de la nota
+     * @param status El estado de la nota
+     * @return La nota creada, o null si el estado no es válido
+     */
+    public Note createNote(String userId, String title, String content, String status) {
+        // Verificar que el estado sea válido para este usuario usando directamente el User
+        if (!userService.isStatusAvailable(userId, status)) {
+            return null;
+        }
+
+        Note note = new Note();
+        note.setUserId(userId);
+        note.setTitle(title);
+        note.setContent(content);
+        note.setStatus(status);
+        note.setCreatedAt(new Date());
+        note.setUpdatedAt(new Date());
+
+        return noteRepository.save(note);
+    }
+
+    /**
+     * Actualiza el estado de una nota existente.
+     * @param noteId El ID de la nota
+     * @param userId El ID del usuario propietario
+     * @param newStatus El nuevo estado
+     * @return La nota actualizada, o null si no se encuentra o el estado no es válido
+     */
+    public Note updateNoteStatus(String noteId, String userId, String newStatus) {
+        // Verificar que el estado sea válido para este usuario
+        if (!userService.isStatusAvailable(userId, newStatus)) {
+            return null;
+        };
+
+        Note note = noteRepository.findById(noteId).orElse(null);
+
+        if (note != null && note.getUserId().equals(userId)) {
+            note.setStatus(newStatus);
+            note.setUpdatedAt(new Date());
+            return noteRepository.save(note);
+        };
+
+        return null;
+    };
+};

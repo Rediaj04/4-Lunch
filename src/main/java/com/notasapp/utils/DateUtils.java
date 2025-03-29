@@ -15,5 +15,5 @@ public class DateUtils {
      */
     public static String formatDate(Date date) {
         return new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(date);
-    }
-}
+    };
+};

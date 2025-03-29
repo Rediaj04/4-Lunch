@@ -17,22 +17,22 @@ public class Note {
     // Identificador único de la nota
     @Id
     private String id;
-    
+
     // Título de la nota
     private String title;
-    
+
     // Contenido detallado de la nota
     private String content;
-    
+
     // Estado actual de la nota (Hecho, No hecho, En proceso, En revisión)
     private String status;
-    
+
     // ID del usuario propietario de la nota
     private String userId;
-    
+
     // Fecha y hora de creación de la nota
     private Date createdAt = new Date();
-    
+
     // Fecha y hora de la última actualización de la nota
     private Date updatedAt = new Date();
 
@@ -45,5 +45,5 @@ public class Note {
         return "=== %s === [%s]\n%s\n\nCreado: %s | Actualizado: %s".formatted(
                 title, status, content, createdAt, updatedAt
         );
-    }
-}
+    };
+};

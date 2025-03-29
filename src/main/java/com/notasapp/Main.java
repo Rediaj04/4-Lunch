@@ -19,11 +19,11 @@ public class Main {
     public static void main(String[] args) {
         // Iniciar el contexto de Spring
         ConfigurableApplicationContext context = SpringApplication.run(Main.class, args);
-        
+
         // Obtener el controlador de notas del contexto de Spring
         NotesController notesController = context.getBean(NotesController.class);
-        
+
         // Iniciar la interfaz de usuario
         notesController.start();
-    }
-}
+    };
+};
