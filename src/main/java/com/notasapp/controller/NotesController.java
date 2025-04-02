@@ -69,7 +69,9 @@ public class NotesController {
         boolean exit = false;
 
         while (!exit) {
-            System.out.println("\n=== MENÚ PRINCIPAL ===");
+            System.out.println("\n===========================================");
+            System.out.println("             MENÚ PRINCIPAL");
+            System.out.println("===========================================");
             System.out.println("1. Ver todas mis notas");
             System.out.println("2. Ver notas por estado");
             System.out.println("3. Crear nueva nota");
@@ -98,8 +100,10 @@ public class NotesController {
                     break;
                 default:
                     System.out.println("\nOpción no válida. Intente nuevamente.");
-            };
-        };
+                    System.out.println("\nPresiona Enter para continuar...");
+                    scanner.nextLine();
+            }
+        }
         scanner.close();
     }
 
@@ -107,16 +111,21 @@ public class NotesController {
      * Muestra todas las notas del usuario actual.
      */
     private void viewAllNotes() {
+        System.out.println("\n===========================================");
+        System.out.println("             TODAS MIS NOTAS");
+        System.out.println("===========================================");
+        
         List<Note> notes = notesService.getAllNotesByUser(currentUser.getUsername());
 
-        System.out.println("\n=== TODAS MIS NOTAS ===");
         if (notes.isEmpty()) {
             System.out.println("No tienes ninguna nota creada.");
-            return;
-        };
-
-        displayNotesList(notes);
-    };
+        } else {
+            displayNotesList(notes);
+        }
+        
+        System.out.println("\nPresiona Enter para continuar...");
+        scanner.nextLine();
+    }
 
     /**
      * Solicita un estado y muestra las notas filtradas por ese estado.
@@ -125,112 +134,108 @@ public class NotesController {
         boolean back = false;
 
         while (!back) {
-            System.out.println("\n=== VER NOTAS POR ESTADO ===");
-
-            // Mostrar estados disponibles
+            System.out.println("\n===========================================");
+            System.out.println("           VER NOTAS POR ESTADO");
+            System.out.println("===========================================");
+            
             List<String> availableStatuses = currentUser.getAvailableStatuses();
             System.out.println("Estados disponibles:");
             for (int i = 0; i < availableStatuses.size(); i++) {
                 System.out.println((i + 1) + ". " + availableStatuses.get(i));
-            };
-
-            System.out.println("5. Cancelar");
+            }
+            System.out.println((availableStatuses.size() + 1) + ". Volver al menú principal");
 
             System.out.print("\nSeleccione una opción: ");
             int option = getIntInput();
 
-            switch (option) {
-                case 5:
-                    // Opción para volver al menú principal
-                    back = true;
-                    break;
-                default:
-                    // Verificar que la opción corresponda a un estado válido
-                    if (option >= 1 && option <= availableStatuses.size()) {
-                        String status = availableStatuses.get(option - 1);
-                        List<Note> notes = notesService.getNotesByStatus(currentUser.getUsername(), status);
+            if (option == availableStatuses.size() + 1) {
+                back = true;
+                System.out.println("\nVolviendo al menú principal...");
+                break;
+            }
 
-                        System.out.println("\n=== NOTAS - " + status.toUpperCase() + " ===");
-                        if (notes.isEmpty()) {
-                            System.out.println("No tienes notas con el estado '" + status + "'.");
-                            System.out.println("\nPresiona Enter para continuar...");
-                            scanner.nextLine();
-                        } else {
-                            displayNotesList(notes);
-                        }
-                    } else {
-                        System.out.println("\nOpción no válida.");
-                        System.out.println("\nPresiona Enter para continuar...");
-                        scanner.nextLine();
-                    }
-                    break;
-            };
-        };
-    };
+            if (option >= 1 && option <= availableStatuses.size()) {
+                String status = availableStatuses.get(option - 1);
+                List<Note> notes = notesService.getNotesByStatus(currentUser.getUsername(), status);
+
+                System.out.println("\n===========================================");
+                System.out.println("           NOTAS - " + status.toUpperCase());
+                System.out.println("===========================================");
+                
+                if (notes.isEmpty()) {
+                    System.out.println("No tienes notas con el estado '" + status + "'.");
+                } else {
+                    displayNotesList(notes);
+                }
+                System.out.println("\nPresiona Enter para continuar...");
+                scanner.nextLine();
+            } else {
+                System.out.println("\nOpción no válida. Por favor, intente nuevamente.");
+                System.out.println("\nPresiona Enter para continuar...");
+                scanner.nextLine();
+            }
+        }
+    }
 
     /**
      * Permite al usuario crear una nueva nota.
      */
     private void createNewNote() {
-        System.out.println("\n=== CREAR NUEVA NOTA ===");
+        System.out.println("\n===========================================");
+        System.out.println("           CREAR NUEVA NOTA");
+        System.out.println("===========================================");
 
         System.out.print("Título: ");
-        String title = scanner.nextLine();
+        String title = scanner.nextLine().trim();
+        if (title.isEmpty()) {
+            System.out.println("\nEl título no puede estar vacío.");
+            System.out.println("\nPresiona Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         System.out.print("Contenido: ");
-        String content = scanner.nextLine();
-
-        // Seleccionar estado usando switch case
-        String status = selectNoteStatus();
-        if (status == null) {
-            return; // Se canceló la creación de la nota
+        String content = scanner.nextLine().trim();
+        if (content.isEmpty()) {
+            System.out.println("\nEl contenido no puede estar vacío.");
+            System.out.println("\nPresiona Enter para continuar...");
+            scanner.nextLine();
+            return;
         }
 
-        Note newNote = notesService.createNote(currentUser.getUsername(), title, content, status);
-
-        if (newNote != null) {
-            System.out.println("\nNota creada con éxito:");
-            System.out.println(newNote);
-        } else {
-            System.out.println("\nError al crear la nota.");
-        }
-    }
-
-    /**
-     * Permite al usuario seleccionar un estado para una nota de su lista de estados
-     * disponibles.
-     *
-     * @return El estado seleccionado o null si se cancela
-     */
-    private String selectNoteStatus() {
         System.out.println("\nSeleccione un estado para la nota:");
-
-        // Mostrar estados disponibles numerados
         List<String> availableStatuses = currentUser.getAvailableStatuses();
         for (int i = 0; i < availableStatuses.size(); i++) {
             System.out.println((i + 1) + ". " + availableStatuses.get(i));
-        };
-
+        }
         System.out.println("0. Cancelar");
 
         System.out.print("\nOpción: ");
         int option = getIntInput();
 
-        switch (option) {
-            case 0:
-                System.out.println("\nCreación de nota cancelada.");
-                return null;
-            default:
-                if (option >= 1 && option <= availableStatuses.size()) {
-                    return availableStatuses.get(option - 1);
-                } else {
-                    System.out.println("\nOpción no válida. Intente nuevamente.");
-                    System.out.println("\nPresiona Enter para continuar...");
-                    scanner.nextLine();
-                    return selectNoteStatus(); // Recursión para volver a intentar
-                }
+        if (option == 0) {
+            System.out.println("\nCreación de nota cancelada.");
+            System.out.println("\nPresiona Enter para continuar...");
+            scanner.nextLine();
+            return;
         }
-    };
+
+        if (option >= 1 && option <= availableStatuses.size()) {
+            String status = availableStatuses.get(option - 1);
+            Note newNote = notesService.createNote(currentUser.getUsername(), title, content, status);
+
+            if (newNote != null) {
+                System.out.println("\nNota creada con éxito:");
+                System.out.println(newNote);
+            } else {
+                System.out.println("\nError al crear la nota.");
+            }
+        } else {
+            System.out.println("\nOpción no válida.");
+        }
+        System.out.println("\nPresiona Enter para continuar...");
+        scanner.nextLine();
+    }
 
     /**
      * Muestra el menú para administrar los estados de las notas.
@@ -239,9 +244,10 @@ public class NotesController {
         boolean back = false;
 
         while (!back) {
-            System.out.println("\n=== ADMINISTRAR ESTADOS ===");
+            System.out.println("\n===========================================");
+            System.out.println("           ADMINISTRAR ESTADOS");
+            System.out.println("===========================================");
 
-            // Mostrar estados actuales
             List<String> statuses = currentUser.getAvailableStatuses();
             System.out.println("Estados actuales:");
             for (int i = 0; i < statuses.size(); i++) {
@@ -264,63 +270,88 @@ public class NotesController {
                     break;
                 case 3:
                     back = true;
+                    System.out.println("\nVolviendo al menú principal...");
                     break;
                 default:
-                    System.out.println("\nOpción no válida. Intente nuevamente.");
-            };
-        };
-    };
+                    System.out.println("\nOpción no válida. Por favor, intente nuevamente.");
+                    System.out.println("\nPresiona Enter para continuar...");
+                    scanner.nextLine();
+            }
+        }
+    }
 
     /**
      * Permite al usuario añadir un nuevo estado a su lista.
      */
     private void addNewStatus() {
-        System.out.print("\nIngrese el nombre del nuevo estado: ");
-        String newStatus = scanner.nextLine();
+        System.out.println("\n===========================================");
+        System.out.println("           AÑADIR NUEVO ESTADO");
+        System.out.println("===========================================");
+        
+        System.out.print("Ingrese el nombre del nuevo estado: ");
+        String newStatus = scanner.nextLine().trim();
+        
+        if (newStatus.isEmpty()) {
+            System.out.println("\nEl estado no puede estar vacío.");
+            System.out.println("\nPresiona Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
-        boolean added = userService.addStatusToUser(currentUser.getUsername(), newStatus);
-
-        if (added) {
+        if (userService.addStatusToUser(currentUser.getUsername(), newStatus)) {
             System.out.println("\nEstado '" + newStatus + "' añadido con éxito.");
+            // Actualizar el usuario actual con los nuevos estados
+            currentUser = userService.getOrCreateUser(currentUser.getUsername());
         } else {
-            System.out.println("\nEl estado '" + newStatus + "' ya existe en tu lista.");
-        };
-    };
+            System.out.println("\nEl estado '" + newStatus + "' ya existe.");
+        }
+        System.out.println("\nPresiona Enter para continuar...");
+        scanner.nextLine();
+    }
 
     /**
      * Permite al usuario eliminar un estado de su lista.
      */
     private void removeStatus() {
-        // Mostrar estados actuales para seleccionar
+        System.out.println("\n===========================================");
+        System.out.println("           ELIMINAR ESTADO");
+        System.out.println("===========================================");
+        
         List<String> statuses = currentUser.getAvailableStatuses();
 
         if (statuses.size() <= 1) {
             System.out.println("\nNo puedes eliminar más estados. Debe existir al menos uno.");
+            System.out.println("\nPresiona Enter para continuar...");
+            scanner.nextLine();
             return;
-        };
+        }
 
         System.out.println("\nSeleccione el estado a eliminar:");
         for (int i = 0; i < statuses.size(); i++) {
             System.out.println((i + 1) + ". " + statuses.get(i));
-        };
+        }
 
-        System.out.print("Número de estado: ");
+        System.out.print("\nNúmero de estado: ");
         int choice = getIntInput();
 
         if (choice < 1 || choice > statuses.size()) {
             System.out.println("\nOpción no válida.");
+            System.out.println("\nPresiona Enter para continuar...");
+            scanner.nextLine();
             return;
-        };
+        }
 
         String statusToRemove = statuses.get(choice - 1);
-        boolean removed = userService.removeStatusFromUser(currentUser.getUsername(), statusToRemove);
-
-        if (removed) {
+        if (userService.removeStatusFromUser(currentUser.getUsername(), statusToRemove)) {
             System.out.println("\nEstado '" + statusToRemove + "' eliminado con éxito.");
+            // Actualizar el usuario actual con los nuevos estados
+            currentUser = userService.getOrCreateUser(currentUser.getUsername());
         } else {
-            System.out.println("\nNo se pudo eliminar el estado '" + statusToRemove + "'.");
-        };
-    };
+            System.out.println("\nNo se pudo eliminar el estado. Asegúrese de tener al menos un estado disponible.");
+        }
+        System.out.println("\nPresiona Enter para continuar...");
+        scanner.nextLine();
+    }
 
     /**
      * Muestra una lista de notas numeradas.
