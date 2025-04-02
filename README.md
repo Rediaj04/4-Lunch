@@ -74,6 +74,65 @@ O alternativamente:
 mvn spring-boot:run -D"spring-boot.run.profiles=test"
 ```
 
+## 🗄️ Configuración de MongoDB
+
+Para que la aplicación funcione correctamente, es necesario tener MongoDB instalado y ejecutándose:
+
+1. **Instalación de MongoDB**:
+   - [Descarga MongoDB Community Server](https://www.mongodb.com/try/download/community)
+   - Sigue las instrucciones de instalación para tu sistema operativo
+
+2. **Iniciar MongoDB**:
+   - En Windows:
+     ```bash
+     net start MongoDB
+     ```
+   - En Linux/Mac:
+     ```bash
+     sudo service mongod start
+     ```
+
+3. **Verificar la conexión**:
+   - MongoDB debe estar ejecutándose en el puerto por defecto (27017)
+   - La aplicación se conectará automáticamente a la base de datos "notesdb"
+
+## ⚠️ Errores Comunes y Soluciones
+
+### 1. Error de conexión a MongoDB
+```
+Failed to connect to MongoDB: Connection refused
+```
+**Solución**: 
+- Verifica que MongoDB esté instalado y ejecutándose
+- Asegúrate de que el servicio de MongoDB esté activo
+- Comprueba que el puerto 27017 esté disponible
+
+### 2. Error de compilación Maven
+```
+Failed to execute goal org.springframework.boot:spring-boot-maven-plugin
+```
+**Solución**:
+- Verifica que tienes Java 17 o superior instalado
+- Ejecuta `mvn clean` antes de intentar compilar nuevamente
+- Asegúrate de tener todas las dependencias descargadas
+
+### 3. Error de permisos
+```
+Access denied to database
+```
+**Solución**:
+- Verifica que MongoDB esté configurado correctamente
+- Asegúrate de que el usuario tenga los permisos necesarios
+- Comprueba la configuración en `application.properties`
+
+### 4. Error de memoria
+```
+OutOfMemoryError: Java heap space
+```
+**Solución**:
+- Aumenta la memoria disponible para Java
+- Ejecuta la aplicación con: `java -Xmx2g -jar target/tnote.jar`
+
 ## 👥 Creadores
 
 <div align="center">
@@ -92,3 +151,4 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 <div align="center">
 Hecho con ❤️ por SoyManoolo y Rediaj04
 </div>
+
