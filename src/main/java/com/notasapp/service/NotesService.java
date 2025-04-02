@@ -94,4 +94,49 @@ public class NotesService {
 
         return null;
     };
+
+    /**
+     * Actualiza una nota existente.
+     * @param note La nota a actualizar
+     * @return La nota actualizada, o null si no se encuentra
+     */
+    public Note updateNote(Note note) {
+        Note existingNote = noteRepository.findById(note.getId()).orElse(null);
+        if (existingNote != null && existingNote.getUserId().equals(note.getUserId())) {
+            return noteRepository.save(note);
+        }
+        return null;
+    }
+
+    /**
+     * Elimina una nota por su ID y el ID del usuario propietario.
+     * @param noteId El ID de la nota a eliminar
+     * @param userId El ID del usuario propietario
+     * @return true si se eliminó correctamente, false en caso contrario
+     */
+    public boolean deleteNote(String noteId, String userId) {
+        Note note = noteRepository.findById(noteId).orElse(null);
+        if (note != null && note.getUserId().equals(userId)) {
+            noteRepository.delete(note);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Elimina una nota por su título y el ID del usuario propietario.
+     * @param title El título de la nota a eliminar
+     * @param userId El ID del usuario propietario
+     * @return true si se eliminó correctamente, false en caso contrario
+     */
+    public boolean deleteNoteByTitle(String title, String userId) {
+        List<Note> notes = noteRepository.findByUserId(userId);
+        for (Note note : notes) {
+            if (note.getTitle().equals(title)) {
+                noteRepository.delete(note);
+                return true;
+            }
+        }
+        return false;
+    }
 };
